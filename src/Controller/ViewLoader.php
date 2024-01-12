@@ -13,28 +13,28 @@ class ViewLoader
 
     public function load(string $name): void
     {
-        if (array_key_exists($name, self::$views)) {
-            $variables = self::$views[$name]->getVariables();
+        if (array_key_exists($name, $this->views)) {
+            $variables = $this->views[$name]->getVariables();
             extract($variables);
             ob_start();
-            require self::$views[$name]->path;
+            require $this->views[$name]->path;
             echo ob_get_clean();
         }
     }
 
     public function add(View $view): void
     {
-        if (!in_array($view, self::$views, true)) {
-            self::$views[$view->name] = $view;
+        if (!in_array($view, $this->views, true)) {
+            $this->views[$view->name] = $view;
         }
     }
 
     public function delete(View $view): void
     {
-        $key = array_search($view, self::$views, true);
+        $key = array_search($view, $this->views, true);
 
         if ($key !== false) {
-            unset(self::$views[$key]);
+            unset($this->views[$key]);
         }
     }
 
@@ -43,6 +43,6 @@ class ViewLoader
      */
     public function getView(string $name): ?View
     {
-        return self::$views[$name] ?? null;
+        return $this->views[$name] ?? null;
     }
 }
