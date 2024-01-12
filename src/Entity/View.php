@@ -16,6 +16,9 @@ final class View
     ) {
     }
 
+    /**
+     * @return <string, mixed> $variables
+     */
     public function getVariables(): array
     {
         return $this->variables;

@@ -7,7 +7,7 @@ use WpToolKit\Entity\MetaBoxPriority;
 use WpToolKit\Entity\ScriptType;
 use WpToolKit\Interface\MetaBoxInterface;
 
-class BaseMetaBoxController implements MetaBoxInterface
+abstract class BaseMetaBoxController implements MetaBoxInterface
 {
     public function __construct(
         private string $id,
@@ -32,13 +32,7 @@ class BaseMetaBoxController implements MetaBoxInterface
         ScriptController::addStyle('understrap-estate-metabox', 'MetaBox.css', ScriptType::ADMIN);
     }
 
-    public function render($post): void
-    {
-        // Override this method in your childs    
-    }
+    abstract function render($post): void;
 
-    public function callback($postId): void
-    {
-        // Override this method in your childs
-    }
+    abstract function callback($postId): void;
 }

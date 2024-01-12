@@ -3,94 +3,72 @@
 namespace WpToolKit\Controller;
 
 use WpToolKit\Entity\Post;
-use WpToolKit\Controller\ScriptController;
 use WpToolKit\Entity\MetaPoly;
 
 class BasePostController
 {
-
-    public function __construct()
+    public function __construct(private Post $post)
     {
-    }
-
-    public function registerPublicType(Post $post): void
-    {
-        add_action('init', function () use ($post) {
+        add_action('init', function () {
             register_post_type(
-                $post->getName(),
+                $this->post->name,
                 [
-                    'public' => true,
-                    'label'  => $post->getTitle(),
-                    'menu_icon' => $post->getIcon(),
-                    'supports' => $post->getSupports(),
-                    'show_in_menu' => $post->getUrl(),
-                    'menu_position' => $post->getPosition(),
-                    'show_in_rest' => true
+                    'public' => $this->post->public,
+                    'label'  => $this->post->title,
+                    'menu_icon' => $this->post->icon,
+                    'supports' => $this->post->supports,
+                    'show_in_menu' => $this->post->getUrl(),
+                    'menu_position' => $this->post->position,
+                    'show_in_rest' => $this->post->rest
                 ]
             );
         });
     }
 
-    public function registerMenu(Post $post): void
+    public function getPost(): Post
     {
-        add_action('admin_menu', function () use ($post) {
+        return $this->post;
+    }
+
+    public function registerMenu(): void
+    {
+        add_action('admin_menu', function () {
             add_menu_page(
-                $post->getTitle(),
-                $post->getTitle(),
-                $post->getRole(),
-                $post->getUrl(),
+                $this->post->title,
+                $this->post->title,
+                $this->post->role,
+                $this->post->getUrl(),
                 '',
-                $post->getIcon(),
-                $post->getPosition()
+                $this->post->icon,
+                $this->post->position
             );
         });
     }
 
-    public function registerSubMenu(Post $parentPost, Post $post): void
+    public function registerSubMenu(Post $parentPost): void
     {
-        add_action('admin_menu', function () use ($parentPost, $post) {
+        add_action('admin_menu', function () use ($parentPost) {
             add_submenu_page(
                 $parentPost->getUrl(),
-                $post->getTitle(),
-                $post->getTitle(),
-                $post->getRole(),
-                $post->getUrl(),
+                $this->post->title,
+                $this->post->title,
+                $this->post->role,
+                $this->post->getUrl(),
                 '',
-                $post->getPosition()
+                $this->post->position
             );
         });
     }
 
-    public function addMetaPolyGutenberg(
-        Post $post,
-        MetaPoly $metaPoly,
-        string $handleScript,
-        string $fileScript,
-    ) {
+    public function addMetaPoly(MetaPoly $metaPoly)
+    {
         register_post_meta(
-            $post->getName(),
-            $metaPoly->getName(),
+            $this->post->name,
+            $metaPoly->name,
             [
-                'single' => $metaPoly->isSingle(),
-                'show_in_rest' => $metaPoly->isShowInRest(),
-                'type' => $metaPoly->getType()->value,
-            ]
-        );
-
-        ScriptController::addGutenbergScript($handleScript, $fileScript);
-    }
-
-    public function addMetaPoly(
-        Post $post,
-        MetaPoly $metaPoly,
-    ) {
-        register_post_meta(
-            $post->getName(),
-            $metaPoly->getName(),
-            [
-                'single' => $metaPoly->isSingle(),
-                'show_in_rest' => $metaPoly->isShowInRest(),
-                'type' => $metaPoly->getType()->value,
+                'single' => $metaPoly->single,
+                'show_in_rest' => $metaPoly->showInRest,
+                'type' => $metaPoly->type->value,
             ]
         );
     }

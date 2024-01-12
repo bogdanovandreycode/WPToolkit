@@ -7,7 +7,7 @@ use WpToolKit\Entity\View;
 class ViewLoader
 {
     /**
-     * @var View[] Array of views
+     * @var View[]
      */
     private static array $views = [];
 
@@ -40,8 +40,6 @@ class ViewLoader
 
     /**
      * Gets a view by name.
-     *
-     * @return View|null The view or null if not found.
      */
     public static function getView(string $name): ?View
     {

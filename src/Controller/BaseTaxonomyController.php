@@ -7,48 +7,46 @@ use WpToolKit\Entity\Taxonomy;
 
 class BaseTaxonomyController
 {
-    public function __construct()
-    {
-    }
-
-    public function registerTaxonomy(Post $post, Taxonomy $taxonomy): void
-    {
-        add_action('init', function () use ($post, $taxonomy) {
+    public function __construct(
+        private Post $post,
+        private Taxonomy $taxonomy
+    ) {
+        add_action('init', function () {
             register_taxonomy(
-                $taxonomy->getName(),
-                $post->getName(),
+                $this->taxonomy->name,
+                $this->post->name,
                 [
                     'labels' => [
-                        'name' => _x($taxonomy->getLabelName(), $taxonomy->getName()),
-                        'singular_name' => _x($taxonomy->getLabelSingularName(), $taxonomy->getLabelSingularName()),
-                        'search_items' =>  __($taxonomy->getLabelSearchItems()),
-                        'all_items' => __($taxonomy->getLabelAllItems()),
-                        'parent_item' => __($taxonomy->getLabelParentItem()),
-                        'parent_item_colon' => __($taxonomy->getLabelParentItemColon()),
-                        'edit_item' => __($taxonomy->getLabelEditItem()),
-                        'update_item' => __($taxonomy->getLabelUpdateItem()),
-                        'add_new_item' => __($taxonomy->getLabelAddNewItem()),
-                        'new_item_name' => __($taxonomy->getLabelNewItemName()),
-                        'menu_name' => __($taxonomy->getLabelMenuName())
+                        'name' => _x($this->taxonomy->labelName, $this->taxonomy->name),
+                        'singular_name' => _x($this->taxonomy->labelSingularName, $this->taxonomy->labelSingularName),
+                        'search_items' =>  __($this->taxonomy->labelSearchItems),
+                        'all_items' => __($this->taxonomy->labelAllItems),
+                        'parent_item' => __($this->taxonomy->labelParentItem),
+                        'parent_item_colon' => __($this->taxonomy->labelParentItemColon),
+                        'edit_item' => __($this->taxonomy->labelEditItem),
+                        'update_item' => __($this->taxonomy->labelUpdateItem),
+                        'add_new_item' => __($this->taxonomy->labelAddNewItem),
+                        'new_item_name' => __($this->taxonomy->labelNewItemName),
+                        'menu_name' => __($this->taxonomy->labelMenuName)
                     ],
-                    'hierarchical' => $taxonomy->isHierarchical(),
-                    'show_ui' => $taxonomy->isShowedUi(),
-                    'query_var' => $taxonomy->isQueryVar(),
-                    'show_in_rest' => true
+                    'hierarchical' => $this->taxonomy->hierarchical,
+                    'show_ui' => $this->taxonomy->showedUi,
+                    'query_var' => $this->taxonomy->queryVar,
+                    'show_in_rest' => $this->post->rest
                 ]
             );
         });
     }
 
-    public function registerSebMenu(Post $post, Taxonomy $taxonomy): void
+    public function registerSubMenu(): void
     {
-        add_action('admin_menu', function () use ($post, $taxonomy) {
+        add_action('admin_menu', function () {
             add_submenu_page(
-                $post->getUrl(),
-                $taxonomy->getLabelName(),
-                $taxonomy->getLabelName(),
+                $this->post->getUrl(),
+                $this->taxonomy->getLabelName(),
+                $this->taxonomy->getLabelName(),
                 'manage_options',
-                "{$taxonomy->getUrl()}&post_type={$post->getName()}"
+                "{$this->taxonomy->getUrl()}&post_type={$this->post->getName()}"
             );
         });
     }

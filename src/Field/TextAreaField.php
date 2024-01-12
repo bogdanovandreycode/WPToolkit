@@ -37,12 +37,10 @@ class TextAreaField implements FieldInterface
 
         $attributes += $this->attributes;
 
-        // Отфильтровать элементы, удаляя те, у которых пустое значение
         $attributes = array_filter($attributes, function ($value) {
             return !empty($value);
         });
 
-        // Convert each key-value pair into a string of the format 'key="value"'
         $attributesString = implode(' ', array_map(function ($key, $value) {
             return sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES));
         }, array_keys($attributes), $attributes));
