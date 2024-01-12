@@ -1,0 +1,19 @@
+{
+    "name": "dadadam/wptoolkit",
+    "description": "WP Tool Kit is library for create wordpress plugin.",
+    "type": "library",
+    "require": {
+        "php": "^8.2||^8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "WpToolKit\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andrey Bogdanov",
+            "email": "bogdanov.andrey.code@gmail.com"
+        }
+    ]
+}
