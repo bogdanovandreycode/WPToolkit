@@ -43,10 +43,10 @@ class BaseTaxonomyController
         add_action('admin_menu', function () {
             add_submenu_page(
                 $this->post->getUrl(),
-                $this->taxonomy->getLabelName(),
-                $this->taxonomy->getLabelName(),
+                $this->taxonomy->labelName,
+                $this->taxonomy->labelName,
                 'manage_options',
-                "{$this->taxonomy->getUrl()}&post_type={$this->post->getName()}"
+                "{$this->taxonomy->getUrl()}&post_type={$this->post->name}"
             );
         });
     }
