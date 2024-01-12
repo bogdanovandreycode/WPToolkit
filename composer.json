@@ -15,5 +15,6 @@
             "name": "Andrey Bogdanov",
             "email": "bogdanov.andrey.code@gmail.com"
         }
-    ]
+    ],
+    "license": "MIT"
 }

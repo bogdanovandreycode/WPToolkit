@@ -9,6 +9,12 @@ class ScriptController
     private static string $folderCss = 'understrap-estate/assets/style';
     private static string $folderJs = 'understrap-estate/assets/script';
 
+    public function setFolders(string $folderCss, string $folderJs)
+    {
+        self::$folderCss = $folderCss;
+        self::$folderJs = $folderJs;
+    }
+
     public static function addStyle(string $handle, string $fileName, ScriptType $type)
     {
         add_action($type->value, function () use ($handle, $fileName) {
