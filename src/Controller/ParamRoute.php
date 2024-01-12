@@ -5,7 +5,7 @@ namespace WpToolKit\Controller;
 use WP_Error;
 use WpToolKit\Interface\ParamRoureInterface;
 
-abstract class BaseParamRoute implements ParamRoureInterface
+abstract class ParamRoute implements ParamRoureInterface
 {
     public function __construct(
         public string $name,

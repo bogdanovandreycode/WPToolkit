@@ -9,9 +9,9 @@ class ViewLoader
     /**
      * @var View[]
      */
-    private static array $views = [];
+    private array $views = [];
 
-    public static function load(string $name): void
+    public function load(string $name): void
     {
         if (array_key_exists($name, self::$views)) {
             $variables = self::$views[$name]->getVariables();
@@ -22,14 +22,14 @@ class ViewLoader
         }
     }
 
-    public static function add(View $view): void
+    public function add(View $view): void
     {
         if (!in_array($view, self::$views, true)) {
             self::$views[$view->name] = $view;
         }
     }
 
-    public static function delete(View $view): void
+    public function delete(View $view): void
     {
         $key = array_search($view, self::$views, true);
 
@@ -41,7 +41,7 @@ class ViewLoader
     /**
      * Gets a view by name.
      */
-    public static function getView(string $name): ?View
+    public function getView(string $name): ?View
     {
         return self::$views[$name] ?? null;
     }

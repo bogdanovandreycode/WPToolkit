@@ -6,10 +6,10 @@ use WP_REST_Request;
 use WpToolKit\Interface\ParamRoureInterface;
 use WpToolKit\Interface\RestRouteInterface;
 
-abstract class BaseRoutController implements RestRouteInterface
+abstract class RoutController implements RestRouteInterface
 {
     /**
-     * @param BaseParamRoute[] $params
+     * @param ParamRoute[] $params
      */
     public function __construct(
         public string $routeNamespace,

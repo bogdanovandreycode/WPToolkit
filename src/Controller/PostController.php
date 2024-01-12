@@ -5,7 +5,7 @@ namespace WpToolKit\Controller;
 use WpToolKit\Entity\Post;
 use WpToolKit\Entity\MetaPoly;
 
-class BasePostController
+class PostController
 {
     public function __construct(private Post $post)
     {

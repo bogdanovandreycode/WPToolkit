@@ -4,10 +4,9 @@ namespace WpToolKit\Controller;
 
 use WpToolKit\Entity\MetaBoxContext;
 use WpToolKit\Entity\MetaBoxPriority;
-use WpToolKit\Entity\ScriptType;
 use WpToolKit\Interface\MetaBoxInterface;
 
-abstract class BaseMetaBoxController implements MetaBoxInterface
+abstract class MetaBoxController implements MetaBoxInterface
 {
     public function __construct(
         private string $id,
@@ -28,8 +27,6 @@ abstract class BaseMetaBoxController implements MetaBoxInterface
         });
 
         add_action('save_post', [$this, 'callback']);
-
-        ScriptController::addStyle('understrap-estate-metabox', 'MetaBox.css', ScriptType::ADMIN);
     }
 
     abstract function render($post): void;

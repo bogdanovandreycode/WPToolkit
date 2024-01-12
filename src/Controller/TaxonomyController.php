@@ -5,7 +5,7 @@ namespace WpToolKit\Controller;
 use WpToolKit\Entity\Post;
 use WpToolKit\Entity\Taxonomy;
 
-class BaseTaxonomyController
+class TaxonomyController
 {
     public function __construct(
         private Post $post,
