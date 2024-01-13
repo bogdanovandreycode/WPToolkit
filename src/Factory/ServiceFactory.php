@@ -15,6 +15,7 @@ class ServiceFactory
             self::$services[$name] = match ($name) {
                 ScriptController::class => new ScriptController(),
                 MenuController::class => new MenuController(),
+                default => throw new \InvalidArgumentException("No service found for $name")
             };
         }
 
