@@ -4,6 +4,7 @@ namespace WpToolKit\Controller;
 
 use WpToolKit\Entity\Post;
 use WpToolKit\Entity\Taxonomy;
+use WpToolKit\Factory\ServiceFactory;
 
 class TaxonomyController
 {
@@ -38,16 +39,18 @@ class TaxonomyController
         });
     }
 
-    public function registerSubMenu(): void
+    public function addToSubMenu(): void
     {
-        add_action('admin_menu', function () {
-            add_submenu_page(
-                $this->post->getUrl(),
-                $this->taxonomy->labelName,
-                $this->taxonomy->labelName,
-                'manage_options',
-                "{$this->taxonomy->getUrl()}&post_type={$this->post->name}"
-            );
-        });
+        $menu = ServiceFactory::getService('MenuController');
+
+        $menu->addToSubMenu(
+            $this->post->getUrl(),
+            $this->taxonomy->labelName,
+            $this->taxonomy->labelName,
+            'manage_options',
+            "{$this->taxonomy->getUrl()}&post_type={$this->post->name}",
+            '',
+            3
+        );
     }
 }

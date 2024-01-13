@@ -4,6 +4,7 @@ namespace WpToolKit\Controller;
 
 use WpToolKit\Entity\Post;
 use WpToolKit\Entity\MetaPoly;
+use WpToolKit\Factory\ServiceFactory;
 
 class PostController
 {
@@ -30,34 +31,34 @@ class PostController
         return $this->post;
     }
 
-    public function registerMenu(): void
+    public function addToMenu(): void
     {
-        add_action('admin_menu', function () {
-            add_menu_page(
-                $this->post->title,
-                $this->post->title,
-                $this->post->role,
-                $this->post->getUrl(),
-                '',
-                $this->post->icon,
-                $this->post->position
-            );
-        });
+        $menu = ServiceFactory::getService('MenuController');
+
+        $menu->addItem(
+            $this->post->title,
+            $this->post->title,
+            $this->post->role,
+            $this->post->getUrl(),
+            '',
+            $this->post->icon,
+            $this->post->position
+        );
     }
 
-    public function registerSubMenu(Post $parentPost): void
+    public function addToSubMenu(Post $parentPost): void
     {
-        add_action('admin_menu', function () use ($parentPost) {
-            add_submenu_page(
-                $parentPost->getUrl(),
-                $this->post->title,
-                $this->post->title,
-                $this->post->role,
-                $this->post->getUrl(),
-                '',
-                $this->post->position
-            );
-        });
+        $menu = ServiceFactory::getService('MenuController');
+
+        $menu->addSubItem(
+            $parentPost->getUrl(),
+            $this->post->title,
+            $this->post->title,
+            $this->post->role,
+            $this->post->getUrl(),
+            '',
+            $this->post->position
+        );
     }
 
     public function addMetaPoly(MetaPoly $metaPoly)
