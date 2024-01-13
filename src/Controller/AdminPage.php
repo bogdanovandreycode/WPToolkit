@@ -40,6 +40,17 @@ abstract class AdminPage
                 $this->position
             );
         }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
+
+            if (
+                strpos($currentUrl, 'wp-admin/') !== false &&
+                strpos($currentUrl, 'page=') !== false
+            ) {
+                $this->callback();
+            }
+        }
     }
 
     abstract function render(): void;
