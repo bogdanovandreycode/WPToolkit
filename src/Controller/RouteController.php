@@ -15,7 +15,7 @@ abstract class RouteController implements RestRouteInterface
         public string $routeNamespace,
         public string $route,
         public array $params,
-        public bool $override
+        public bool $override = false
     ) {
         add_action('rest_api_init', function () {
             register_rest_route(
