@@ -43,7 +43,7 @@ class TaxonomyController
     {
         $menu = ServiceFactory::getService('MenuController');
 
-        $menu->addToSubMenu(
+        $menu->addSubItem(
             $this->post->getUrl(),
             $this->taxonomy->labelName,
             $this->taxonomy->labelName,
