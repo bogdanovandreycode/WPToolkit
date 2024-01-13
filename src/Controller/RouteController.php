@@ -6,7 +6,7 @@ use WP_REST_Request;
 use WpToolKit\Interface\ParamRoureInterface;
 use WpToolKit\Interface\RestRouteInterface;
 
-abstract class RoutController implements RestRouteInterface
+abstract class RouteController implements RestRouteInterface
 {
     /**
      * @param ParamRoute[] $params
