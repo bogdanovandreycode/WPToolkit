@@ -3,8 +3,9 @@
 namespace WpToolKit\Controller;
 
 use WpToolKit\Factory\ServiceFactory;
+use WpToolKit\Interface\ContentHandlerInterface;
 
-abstract class AdminPage
+abstract class AdminPage implements ContentHandlerInterface
 {
     public function __construct(
         public string $pageTitle,
