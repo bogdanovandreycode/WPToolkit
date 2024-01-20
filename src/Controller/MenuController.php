@@ -9,7 +9,7 @@ class MenuController
         string $menuTitle,
         string $role,
         string $url,
-        string $renderFunction,
+        mixed $renderFunction,
         string $icon,
         int $position
     ): void {
@@ -40,7 +40,7 @@ class MenuController
         string $menuTitle,
         string $role,
         string $url,
-        string $renderFunction,
+        mixed $renderFunction,
         int $position
     ): void {
         add_action('admin_menu', function () use (
