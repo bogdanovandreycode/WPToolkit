@@ -11,8 +11,7 @@ abstract class AdminPage implements ContentHandlerInterface
         public string $pageTitle,
         public string $menuTitle,
         public string $role,
-        public string $url,
-        public string $renderFunction,
+        public string $slug,
         public int $position,
         public bool $isSubManuItem = false,
         public ?string $parentUrl = null,
@@ -26,7 +25,7 @@ abstract class AdminPage implements ContentHandlerInterface
                 $this->pageTitle,
                 $this->menuTitle,
                 $this->role,
-                $this->url,
+                $this->slug,
                 [$this, 'render'],
                 $this->position
             );
@@ -35,7 +34,7 @@ abstract class AdminPage implements ContentHandlerInterface
                 $this->pageTitle,
                 $this->menuTitle,
                 $this->role,
-                $this->url,
+                $this->slug,
                 [$this, 'render'],
                 $this->icon,
                 $this->position
@@ -47,7 +46,8 @@ abstract class AdminPage implements ContentHandlerInterface
 
             if (
                 strpos($currentUrl, 'wp-admin/') !== false &&
-                strpos($currentUrl, 'page=') !== false
+                strpos($currentUrl, 'page=') !== false &&
+                strpos($currentUrl, $this->slug) !== false
             ) {
                 $this->callback();
             }
