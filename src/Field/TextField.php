@@ -34,6 +34,7 @@ class TextField implements FieldInterface
             'require' => $this->require,
             'name' => $this->name,
             'id' => $this->id,
+            'class' => $this->class,
             'value' => esc_attr($this->value),
         ];
 

@@ -32,7 +32,8 @@ class TextAreaField implements FieldInterface
         $attributes = [
             'require' => $this->require,
             'name' => $this->name,
-            'id' => $this->id
+            'id' => $this->id,
+            'class' => $this->class,
         ];
 
         $attributes += $this->attributes;

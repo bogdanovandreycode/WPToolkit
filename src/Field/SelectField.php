@@ -36,6 +36,7 @@ class SelectField implements FieldInterface
             'require' => $this->require,
             'name' => $this->name,
             'id' => $this->id,
+            'class' => $this->class,
         ];
 
         $attributes += $this->attributes;

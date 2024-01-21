@@ -37,6 +37,7 @@ class NumberField implements FieldInterface
             'name' => $this->name,
             'require' => $this->require,
             'id' => $this->id,
+            'class' => $this->class,
             'min' => $this->min,
             'max' => $this->max,
             'step' => $this->step,
