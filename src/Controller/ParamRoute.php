@@ -17,7 +17,7 @@ abstract class ParamRoute implements ParamRoureInterface
     public function getArray(): array
     {
         return [
-            'param_name' => [
+            $this->name => [
                 'default' => $this->default,
                 'required' => $this->required,
                 'validate_callback' => [$this, 'validate'],
