@@ -11,6 +11,7 @@ abstract class ShortcodeController
         public string $name,
         public array $atts
     ) {
+        add_shortcode($name, [$this, 'render']);
     }
 
     abstract function render($atts, $content): string;
