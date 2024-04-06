@@ -22,6 +22,19 @@ class ViewLoader
         }
     }
 
+    public function fetchViewContent(string $name): string|false
+    {
+        if (array_key_exists($name, $this->views)) {
+            $variables = $this->views[$name]->getVariables();
+            extract($variables);
+            ob_start();
+            require $this->views[$name]->path;
+            return ob_get_clean();
+        }
+
+        return false;
+    }
+
     public function add(View $view): void
     {
         if (!in_array($view, $this->views, true)) {

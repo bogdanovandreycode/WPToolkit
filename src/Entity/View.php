@@ -5,9 +5,7 @@ namespace WpToolKit\Entity;
 final class View
 {
     /**
-     * Undocumented function
-     *
-     * @param <string, mixed> $variables
+     * @param array<string, mixed> $variables
      */
     public function __construct(
         public string $name,
@@ -17,7 +15,7 @@ final class View
     }
 
     /**
-     * @return <string, mixed> $variables
+     * @return array<string, mixed>
      */
     public function getVariables(): array
     {
