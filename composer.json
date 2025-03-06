@@ -16,6 +16,7 @@
             "email": "bogdanov.andrey.code@gmail.com"
         }
     ],
-    "license": "MIT",
-    "version": "1.0.4"
+    "minimum-stability": "beta",
+    "prefer-stable": true,
+    "license": "MIT"
 }
