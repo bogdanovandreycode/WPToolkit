@@ -2,7 +2,7 @@
 
 namespace WpToolKit\Manager;
 
-final class MenuManager
+final class AdminMenuManager
 {
     /** @var array<array{target: string, movable: string}> */
     private static $ruleMovedMenus = [];
