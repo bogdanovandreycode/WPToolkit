@@ -24,6 +24,8 @@ class PostController
                 ]
             );
         });
+
+        add_filter('the_content', [$this, 'renderContent']);
     }
 
     public function getPost(): Post
@@ -72,5 +74,10 @@ class PostController
                 'type' => $metaPoly->type->value,
             ]
         );
+    }
+
+    public function renderContent($content)
+    {
+        return $content;
     }
 }
