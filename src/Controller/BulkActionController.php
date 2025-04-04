@@ -2,19 +2,25 @@
 
 namespace WpToolKit\Controller;
 
+use WP_Screen;
+
 class BulkActionController
 {
+    private string $screenId;
     private string $postType;
     private array $actions = [];
 
     /** @var callable|null */
     private $noticeCallback = null;
 
-    public function __construct(string $postType)
+
+    public function __construct(string $screenId, ?string $postType = null)
     {
-        $this->postType = $postType;
-        add_filter("bulk_actions-edit-{$this->postType}", [$this, 'registerActions']);
-        add_filter("handle_bulk_actions-edit-{$this->postType}", [$this, 'handleAction'], 10, 3);
+        $this->screenId = $screenId;
+        $this->postType = $postType ?? '';
+
+        add_filter("bulk_actions-{$this->screenId}", [$this, 'registerActions']);
+        add_filter("handle_bulk_actions-{$this->screenId}", [$this, 'handleAction'], 10, 3);
         add_action("admin_notices", [$this, 'showNotice']);
     }
 
@@ -34,15 +40,15 @@ class BulkActionController
         return $actions;
     }
 
-    public function handleAction(string $redirectUrl, string $action, array $postIds): string
+    public function handleAction(string $redirectUrl, string $action, array $objectIds): string
     {
         if (!isset($this->actions[$action])) {
             return $redirectUrl;
         }
 
         $processed = 0;
-        foreach ($postIds as $postId) {
-            if (call_user_func($this->actions[$action]['callback'], $postId)) {
+        foreach ($objectIds as $id) {
+            if (call_user_func($this->actions[$action]['callback'], $id)) {
                 $processed++;
             }
         }
@@ -61,8 +67,16 @@ class BulkActionController
     public function showNotice(): void
     {
         if (
+            !isset($_GET['bulk_action_done'], $_GET['processed'])
+        ) {
+            return;
+        }
+
+        $screen = get_current_screen();
+        if (
             !isset($_GET['bulk_action_done'], $_GET['processed']) ||
-            get_current_screen()->post_type !== $this->postType
+            $screen->id !== $this->screenId ||
+            ($this->postType && $screen->post_type !== $this->postType)
         ) {
             return;
         }

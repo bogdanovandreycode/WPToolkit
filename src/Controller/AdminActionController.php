@@ -4,26 +4,21 @@ namespace WpToolKit\Controller;
 
 use WP_Post;
 
-/**
- * Контроллер для действий (ссылок) внутри строки записи
- */
 class AdminActionController
 {
-    private string $postType;
+    private string $screenId;
+    private ?string $postType;
     private array $actions = [];
 
-    public function __construct(string $postType)
+    public function __construct(string $screenId, ?string $postType = null)
     {
+        $this->screenId = $screenId;
         $this->postType = $postType;
+
         add_filter('post_row_actions', [$this, 'render'], 10, 2);
     }
 
-    /**
-     * Добавляет действие к строке записи
-     *
-     * @param string $key Ключ действия
-     * @param callable $callback Функция, возвращающая URL
-     */
+
     public function addAction(string $key, callable $callback): void
     {
         $this->actions[$key] = $callback;
@@ -31,7 +26,15 @@ class AdminActionController
 
     public function render(array $actions, WP_Post $post): array
     {
-        if ($post->post_type !== $this->postType) return $actions;
+        $screen = get_current_screen();
+
+        if (
+            !is_admin() ||
+            $screen->id !== $this->screenId ||
+            ($this->postType && $post->post_type !== $this->postType)
+        ) {
+            return $actions;
+        }
 
         foreach ($this->actions as $key => $callback) {
             $url = call_user_func($callback, $post);
