@@ -7,7 +7,7 @@ use WPToolkit\Entity\SmtpSettings;
 
 class MailController
 {
-    public static function send(
+    public function send(
         string $email,
         string $subject,
         string $message,
@@ -22,7 +22,7 @@ class MailController
         );
     }
 
-    private static function setSmtpSettings(SmtpSettings $settings, MailEnvelope $envelope): void
+    private function setSmtpSettings(SmtpSettings $settings, MailEnvelope $envelope): void
     {
         add_action('phpmailer_init', function ($phpmailer) use ($settings, $envelope) {
             $phpmailer->isSMTP();
