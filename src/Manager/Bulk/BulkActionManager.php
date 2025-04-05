@@ -1,34 +1,30 @@
 <?php
 
-namespace WpToolKit\Manager;
+namespace WpToolKit\Manager\Bulk;
 
+use WpToolKit\Interface\Bulk\BulkStrategyInterface;
 use WP_Screen;
 
 class BulkActionManager
 {
-    private string $screenId;
-    private string $postType;
     private array $actions = [];
 
     /** @var callable|null */
     private $noticeCallback = null;
 
-    public function __construct(string $screenId, ?string $postType = null)
-    {
-        $this->screenId = $screenId;
-        $this->postType = $postType ?? '';
-
-        add_filter("bulk_actions-{$this->screenId}", [$this, 'registerActions']);
-        add_filter("handle_bulk_actions-{$this->screenId}", [$this, 'handleAction'], 10, 3);
+    public function __construct(
+        private string $screenId,
+        private ?string $postType,
+        private BulkStrategyInterface $strategy
+    ) {
+        add_filter($strategy->getRegisterHook($screenId), [$this, 'registerActions']);
+        add_filter($strategy->getHandleHook($screenId), [$this, 'handleAction'], 10, 3);
         add_action("admin_notices", [$this, 'showNotice']);
     }
 
     public function addAction(string $key, string $label, callable $callback): void
     {
-        $this->actions[$key] = [
-            'label' => $label,
-            'callback' => $callback
-        ];
+        $this->actions[$key] = compact('label', 'callback');
     }
 
     public function registerActions(array $actions): array
@@ -73,7 +69,7 @@ class BulkActionManager
 
         $screen = get_current_screen();
         if (
-            !isset($_GET['bulk_action_done'], $_GET['processed']) ||
+            !($screen instanceof WP_Screen) ||
             $screen->id !== $this->screenId ||
             ($this->postType && $screen->post_type !== $this->postType)
         ) {
