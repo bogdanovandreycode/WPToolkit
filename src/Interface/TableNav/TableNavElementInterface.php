@@ -1,6 +1,6 @@
 <?php
 
-namespace WpToolKit\Manager\TableNav;
+namespace WpToolKit\Interface\TableNav;
 
 interface TableNavElementInterface
 {

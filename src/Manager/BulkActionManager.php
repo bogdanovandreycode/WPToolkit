@@ -1,10 +1,10 @@
 <?php
 
-namespace WpToolKit\Controller;
+namespace WpToolKit\Manager;
 
 use WP_Screen;
 
-class BulkActionController
+class BulkActionManager
 {
     private string $screenId;
     private string $postType;
@@ -12,7 +12,6 @@ class BulkActionController
 
     /** @var callable|null */
     private $noticeCallback = null;
-
 
     public function __construct(string $screenId, ?string $postType = null)
     {

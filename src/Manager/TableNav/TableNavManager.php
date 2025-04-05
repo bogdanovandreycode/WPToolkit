@@ -2,8 +2,9 @@
 
 namespace WpToolKit\Manager\TableNav;
 
-use WP_Screen;
 use WP_Query;
+use WP_Screen;
+use WpToolKit\Interface\TableNav\TableNavElementInterface;
 
 class TableNavManager
 {
@@ -20,9 +21,35 @@ class TableNavManager
         $this->screenId = $screenId;
         $this->postType = $postType;
 
-        add_action('restrict_manage_posts', [$this, 'render']);
-        add_filter('parse_query', [$this, 'apply']);
+        $hooks = $this->getHookNames();
+
+        add_action($hooks['render'], [$this, 'render']);
+        add_filter($hooks['apply'], [$this, 'apply']);
     }
+
+    private function getHookNames(): array
+    {
+        switch ($this->screenId) {
+            case 'users':
+                return [
+                    'render' => 'restrict_manage_users',
+                    'apply'  => 'pre_get_users',
+                ];
+
+            case 'upload':
+                return [
+                    'render' => 'restrict_manage_posts',
+                    'apply'  => 'parse_query',
+                ];
+
+            default:
+                return [
+                    'render' => 'restrict_manage_posts',
+                    'apply'  => 'parse_query',
+                ];
+        }
+    }
+
 
     public function addElement(TableNavElementInterface $element): void
     {
@@ -46,7 +73,10 @@ class TableNavManager
         }
     }
 
-    public function apply(WP_Query $query): void
+    /**
+     * @param WP_Query|WP_User_Query $query
+     */
+    public function apply($query): void
     {
         if (!is_admin() || !$query->is_main_query()) {
             return;

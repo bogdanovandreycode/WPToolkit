@@ -1,8 +1,9 @@
 <?php
 
-namespace WpToolKit\Manager\TableNav;
+namespace WpToolKit\Manager\TableNav\Element;
 
 use WP_Query;
+use WpToolKit\Interface\TableNav\TableNavElementInterface;
 
 class TableNavFilter implements TableNavElementInterface
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace WpToolKit\Controller;
+namespace WpToolKit\Manager;
 
 use WP_Post;
 
-class AdminActionController
+class AdminActionManager
 {
     private string $screenId;
     private ?string $postType;

@@ -1,6 +1,8 @@
 <?php
 
-namespace WpToolKit\Manager\TableNav;
+namespace WpToolKit\Manager\TableNav\Element;
+
+use WpToolKit\Interface\TableNav\TableNavElementInterface;
 
 class TableNavButton implements TableNavElementInterface
 {
