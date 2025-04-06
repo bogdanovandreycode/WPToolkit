@@ -3,8 +3,9 @@
 namespace WpToolKit\Controller;
 
 use WP_Widget;
+use WpToolKit\Interface\WidgetInterface;
 
-abstract class WidgetsController extends WP_Widget
+abstract class WidgetsController extends WP_Widget implements WidgetInterface
 {
     public function __construct(
         string $idBase,
@@ -22,9 +23,18 @@ abstract class WidgetsController extends WP_Widget
         });
     }
 
-    abstract public function widget($args, $instance): void;
+    public function widget($args, $instance): void
+    {
+        throw new \RuntimeException("The widget() method must be overridden in the subclass.");
+    }
 
-    abstract public function form($instance): void;
+    public function form($instance): void
+    {
+        throw new \RuntimeException("The form() method must be overridden in the subclass.");
+    }
 
-    abstract public function update($new_instance, $old_instance): array;
+    public function update($new_instance, $old_instance): array
+    {
+        throw new \RuntimeException("The update() method must be overridden in the subclass.");
+    }
 }
