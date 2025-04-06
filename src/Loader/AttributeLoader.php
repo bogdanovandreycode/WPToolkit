@@ -16,13 +16,18 @@ class AttributeLoader
         $this->directory = rtrim($directory, '/\\');
     }
 
+    private function getClassFromFile(string $file): string
+    {
+        $relativePath = str_replace([$this->directory, '/', '\\', '.php'], ['', '\\', '\\', ''], $file);
+        return $this->baseNamespace . '\\' . ltrim($relativePath, '\\');
+    }
+
     public function loadRoutes(): void
     {
         foreach ($this->scanDirectory($this->directory) as $file) {
             require_once $file;
 
-            $relativePath = str_replace([$this->directory, '/', '\\', '.php'], ['', '\\', '\\', ''], $file);
-            $class = $this->baseNamespace . '\\' . ltrim($relativePath, '\\');
+            $class = $this->getClassFromFile($file);
 
             if (!class_exists($class)) {
                 continue;
@@ -35,6 +40,16 @@ class AttributeLoader
                 new $class();
             }
         }
+    }
+
+    private function isSkippable(string $file): bool
+    {
+        $content = file_get_contents($file);
+        $basename = basename($file);
+
+        return
+            !str_contains($content, 'class ') ||
+            str_starts_with($basename, '_');
     }
 
     /**
@@ -51,7 +66,7 @@ class AttributeLoader
 
             if (is_dir($path)) {
                 $files = array_merge($files, $this->scanDirectory($path));
-            } elseif (str_ends_with($item, '.php')) {
+            } elseif (str_ends_with($item, '.php') && !$this->isSkippable($path)) {
                 $files[] = $path;
             }
         }
