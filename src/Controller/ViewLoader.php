@@ -3,6 +3,7 @@
 namespace WpToolKit\Controller;
 
 use WpToolKit\Entity\View;
+use Symfony\Component\Yaml\Yaml;
 
 class ViewLoader
 {
@@ -51,11 +52,39 @@ class ViewLoader
         }
     }
 
-    /**
-     * Gets a view by name.
-     */
     public function getView(string $name): ?View
     {
         return $this->views[$name] ?? null;
+    }
+
+    public function includeView(string $name, array $data = []): void
+    {
+        if (array_key_exists($name, $this->views)) {
+            $variables = array_merge(
+                $this->views[$name]->getVariables(),
+                $data
+            );
+
+            extract($variables);
+            require $this->views[$name]->path;
+        }
+    }
+
+
+    public function loadFromYaml(string $yamlPath, string $pluginDir): void
+    {
+        if (!file_exists($yamlPath)) {
+            throw new \InvalidArgumentException("YAML file not found: $yamlPath");
+        }
+
+        $data = Yaml::parseFile($yamlPath);
+
+        foreach ($data as $name => $relativePath) {
+            $this->add(new View(
+                $name,
+                $pluginDir . $relativePath,
+                []
+            ));
+        }
     }
 }

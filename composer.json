@@ -3,7 +3,8 @@
     "description": "WP Tool Kit is library for create wordpress plugin.",
     "type": "library",
     "require": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "symfony/yaml": "^7.2"
     },
     "autoload": {
         "psr-4": {
