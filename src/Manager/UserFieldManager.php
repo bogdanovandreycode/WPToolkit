@@ -7,6 +7,7 @@ use WpToolKit\Interface\UserFieldInterface;
 
 class UserFieldManager
 {
+    /** @var array<string, UserFieldInterface[]> */
     private array $fields = [];
 
     public function __construct()
@@ -18,22 +19,28 @@ class UserFieldManager
         add_action('edit_user_profile_update', [$this, 'saveFields']);
     }
 
-    public function addField(UserFieldInterface $field): void
+    public function addField(UserFieldInterface $field, int $priority = 10): void
     {
-        $this->fields[] = $field;
+        $this->fields[$priority][] = $field;
     }
 
     public function renderFields(WP_User $user): void
     {
-        foreach ($this->fields as $field) {
-            $field->render($user);
+        ksort($this->fields); // Сортируем по приоритету
+        foreach ($this->fields as $fieldGroup) {
+            foreach ($fieldGroup as $field) {
+                $field->render($user);
+            }
         }
     }
 
     public function saveFields(int $userId): void
     {
-        foreach ($this->fields as $field) {
-            $field->save($userId);
+        ksort($this->fields); // Тоже желательно сортировать
+        foreach ($this->fields as $fieldGroup) {
+            foreach ($fieldGroup as $field) {
+                $field->save($userId);
+            }
         }
     }
 }
