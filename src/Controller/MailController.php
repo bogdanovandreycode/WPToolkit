@@ -22,7 +22,7 @@ class MailController
         );
     }
 
-    private function setSmtpSettings(SmtpSettings $settings, MailEnvelope $envelope): void
+    public function setSmtpSettings(SmtpSettings $settings, MailEnvelope $envelope): void
     {
         add_action('phpmailer_init', function ($phpmailer) use ($settings, $envelope) {
             $phpmailer->isSMTP();
