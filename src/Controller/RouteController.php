@@ -10,19 +10,21 @@ abstract class RouteController implements RestRouteInterface
 {
     /**
      * @param ParamRoute[] $params
+     * @param string $methods HTTP methods allowed, e.g., 'POST', 'GET'
      */
     public function __construct(
         public string $routeNamespace,
         public string $route,
         public array $params,
-        public bool $override = false
+        public bool $override = false,
+        public string $methods = 'POST'
     ) {
         add_action('rest_api_init', function () {
             register_rest_route(
                 $this->routeNamespace,
                 $this->route,
                 [
-                    'methods' => 'POST',
+                    'methods' => $this->methods,
                     'callback' => [$this, 'callback'],
                     'permission_callback' => [$this, 'checkPermission'],
                     'args' => $this->prepareArgs($this->params),
