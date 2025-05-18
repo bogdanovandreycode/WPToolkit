@@ -1,5 +1,5 @@
 {
-    "name": "dadadam/wptoolkit",
+    "name": "arraydev/wptoolkit",
     "description": "WP Tool Kit is library for create wordpress plugin.",
     "type": "library",
     "require": {
