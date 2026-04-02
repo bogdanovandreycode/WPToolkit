@@ -2,8 +2,8 @@
 
 namespace WpToolKit\Controller;
 
-use WPToolkit\Entity\MailEnvelope;
-use WPToolkit\Entity\SmtpSettings;
+use WPToolKit\Entity\MailEnvelope;
+use WPToolKit\Entity\SmtpSettings;
 
 class MailController
 {
@@ -34,7 +34,7 @@ class MailController
             $phpmailer->SMTPSecure = $settings->secure;
             $phpmailer->SMTPDebug  = $settings->debugMode;
 
-            $phpmailer->Debugoutput = fn($str, $level) => file_put_contents(
+            $phpmailer->Debugoutput = fn ($str, $level) => file_put_contents(
                 $settings->debugFileOutput,
                 gmdate("Y-m-d H:i:s") . " [$level] $str\n",
                 FILE_APPEND
