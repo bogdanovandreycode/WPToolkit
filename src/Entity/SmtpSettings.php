@@ -1,6 +1,6 @@
 <?php
 
-namespace WPToolkit\Entity;
+namespace WPToolKit\Entity;
 
 class SmtpSettings
 {
@@ -13,5 +13,6 @@ class SmtpSettings
         public string $secure,
         public int $debugMode = 0,
         public string $debugFileOutput = 'smtp.log',
-    ) {}
+    ) {
+    }
 }

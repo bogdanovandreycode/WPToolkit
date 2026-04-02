@@ -1,6 +1,6 @@
 <?php
 
-namespace WPToolkit\Entity;
+namespace WPToolKit\Entity;
 
 class MailEnvelope
 {
