@@ -2,8 +2,8 @@
 
 namespace WpToolKit\Controller;
 
-use WPToolKit\Entity\MailEnvelope;
-use WPToolKit\Entity\SmtpSettings;
+use WpToolKit\Entity\MailEnvelope;
+use WpToolKit\Entity\SmtpSettings;
 
 class MailController
 {

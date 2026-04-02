@@ -1,6 +1,6 @@
 <?php
 
-namespace WPToolKit\Entity;
+namespace WpToolKit\Entity;
 
 class SmtpSettings
 {
