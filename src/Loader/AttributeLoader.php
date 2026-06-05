@@ -5,7 +5,9 @@ namespace WpToolKit\Loader;
 use InvalidArgumentException;
 use ReflectionClass;
 use WpToolKit\Attribute\Action;
+use WpToolKit\Attribute\Ajax;
 use WpToolKit\Attribute\ControllerAttributeInterface;
+use WpToolKit\Attribute\Cron;
 use WpToolKit\Attribute\Filter;
 use WpToolKit\Attribute\MetaBox;
 use WpToolKit\Attribute\Page;
@@ -13,7 +15,9 @@ use WpToolKit\Attribute\Route;
 use WpToolKit\Attribute\Shortcode;
 use WpToolKit\Attribute\Widget;
 use WpToolKit\Controller\ActionController;
+use WpToolKit\Controller\AjaxController;
 use WpToolKit\Controller\AdminPage;
+use WpToolKit\Controller\CronController;
 use WpToolKit\Controller\FilterController;
 use WpToolKit\Controller\MetaBoxController;
 use WpToolKit\Controller\RouteController;
@@ -29,6 +33,8 @@ class AttributeLoader
     private const ATTRIBUTE_CLASS_MAP = [
         Route::class => RouteController::class,
         Action::class => ActionController::class,
+        Ajax::class => AjaxController::class,
+        Cron::class => CronController::class,
         Filter::class => FilterController::class,
         MetaBox::class => MetaBoxController::class,
         Page::class => AdminPage::class,

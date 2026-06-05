@@ -6,12 +6,20 @@ The library helps you register:
 
 - REST routes
 - actions
+- ajax handlers
+- cron jobs
 - filters
 - admin pages
 - meta boxes
 - shortcodes
 - widgets
 - roles
+- options
+- transients
+- settings API
+- notices
+- HTTP client
+- lifecycle callbacks
 - views
 
 It is designed to avoid global helper state and internal static service locators, which makes runtime behavior more predictable when multiple plugins are active.
@@ -71,6 +79,8 @@ Supported attributes:
 
 - `#[Route(...)]`
 - `#[Action(...)]`
+- `#[Ajax(...)]`
+- `#[Cron(...)]`
 - `#[Filter(...)]`
 - `#[Page(...)]`
 - `#[MetaBox(...)]`
@@ -82,6 +92,7 @@ Important rules:
 - One controller class can have only one controller attribute.
 - A class with `#[Route]` must extend `RouteController`, `#[Action]` must extend `ActionController`, and so on.
 - Attribute-loaded classes must be constructible from attribute arguments and container-resolved dependencies.
+- Your current `wpkit` `Boot.template` still loads only the route directory, so you will need to expand your plugin bootstrap later if you want `Ajax`, `Cron`, `Page`, `Widget`, and other attribute controllers to load automatically.
 
 ## REST Routes
 
@@ -191,6 +202,70 @@ final class RegisterSomethingAction extends ActionController
     public function handle(...$args): void
     {
         // Your logic here
+    }
+}
+```
+
+## AJAX
+
+Base controller: `WpToolKit\Controller\AjaxController`
+
+Attribute: `WpToolKit\Attribute\Ajax`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\DemoPlugin\Http;
+
+use WpToolKit\Attribute\Ajax;
+use WpToolKit\Controller\AjaxController;
+
+#[Ajax('demo_sync')]
+final class SyncAjax extends AjaxController
+{
+    public function handle(): void
+    {
+        wp_send_json_success([
+            'message' => 'Sync completed',
+        ]);
+    }
+}
+```
+
+Guest access example:
+
+```php
+#[Ajax('public_lookup', allowGuests: true)]
+```
+
+## Cron
+
+Base controller: `WpToolKit\Controller\CronController`
+
+Attribute: `WpToolKit\Attribute\Cron`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\DemoPlugin\Hooks;
+
+use WpToolKit\Attribute\Cron;
+use WpToolKit\Controller\CronController;
+
+#[Cron('demo_hourly_sync', 'hourly')]
+final class HourlySyncCron extends CronController
+{
+    public function handle(): void
+    {
+        // Scheduled job logic
     }
 }
 ```
@@ -442,6 +517,168 @@ $loader = new AttributeLoader(
 );
 
 $loader->loadControllers();
+```
+
+## Options
+
+Manager: `WpToolKit\Manager\OptionManager`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Manager\OptionManager;
+
+$options = new OptionManager();
+
+$options->update('demo_plugin_enabled', true);
+$enabled = $options->get('demo_plugin_enabled', false);
+```
+
+Site options:
+
+```php
+$options->updateSite('demo_network_enabled', true);
+$enabled = $options->getSite('demo_network_enabled', false);
+```
+
+## Transients
+
+Manager: `WpToolKit\Manager\TransientManager`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Manager\TransientManager;
+
+$transients = new TransientManager();
+
+$transients->set('demo_cache', ['ok' => true], HOUR_IN_SECONDS);
+$cached = $transients->get('demo_cache');
+```
+
+## Settings API
+
+Manager: `WpToolKit\Manager\SettingsManager`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Field\TextField;
+use WpToolKit\Manager\SettingsManager;
+
+$settings = new SettingsManager();
+
+$settings->addSetting('demo_options', 'demo_option_name');
+$settings->addSection('demo_main', 'Main Settings', 'demo-page');
+$settings->addField(
+    'demo-page',
+    'demo_main',
+    new TextField(
+        'demo_option_name',
+        'Option Name',
+        (string) get_option('demo_option_name', '')
+    )
+);
+```
+
+Render form in your admin page:
+
+```php
+$settings->renderForm('demo_options', 'demo-page');
+```
+
+## Notices
+
+Manager: `WpToolKit\Manager\NoticeManager`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Manager\NoticeManager;
+
+$notices = new NoticeManager();
+$notices->success('Settings saved successfully.');
+$notices->warning('This action will affect all items.');
+```
+
+## HTTP API
+
+Controller: `WpToolKit\Controller\HttpClient`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Controller\HttpClient;
+
+$http = new HttpClient();
+$response = $http->get('https://example.com/wp-json/');
+$body = $http->getBody($response);
+```
+
+Fetch JSON:
+
+```php
+$json = $http->getJson('https://example.com/wp-json/');
+```
+
+## Lifecycle
+
+Manager: `WpToolKit\Manager\LifecycleManager`
+
+This manager does not replace your `Boot.php`. It is intended to organize activation, deactivation, and uninstall callbacks inside your existing boot flow.
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Manager\LifecycleManager;
+
+$lifecycle = new LifecycleManager();
+
+$lifecycle->onActivate(function (): void {
+    flush_rewrite_rules();
+});
+
+$lifecycle->onDeactivate(function (): void {
+    flush_rewrite_rules();
+});
+```
+
+Then call it from your `Boot.php` methods:
+
+```php
+public function activate_demo_plugin(): void
+{
+    $this->lifecycle->activate();
+}
+
+public function deactivate_demo_plugin(): void
+{
+    $this->lifecycle->deactivate();
+}
 ```
 
 ## Classic Controllers Without Attributes
