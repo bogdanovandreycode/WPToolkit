@@ -17,6 +17,8 @@ The library helps you register:
 - options
 - transients
 - settings API
+- nonces
+- capabilities
 - notices
 - HTTP client
 - lifecycle callbacks
@@ -615,6 +617,70 @@ use WpToolKit\Manager\NoticeManager;
 $notices = new NoticeManager();
 $notices->success('Settings saved successfully.');
 $notices->warning('This action will affect all items.');
+```
+
+## Nonces
+
+Manager: `WpToolKit\Manager\NonceManager`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Manager\NonceManager;
+
+$nonces = new NonceManager();
+
+$nonce = $nonces->create('save_demo_settings');
+$isValid = $nonces->verify($nonce, 'save_demo_settings');
+```
+
+Render nonce field in a form:
+
+```php
+echo $nonces->field('save_demo_settings');
+```
+
+Check nonce in admin postback:
+
+```php
+$nonces->checkAdminReferer('save_demo_settings');
+```
+
+Check nonce in AJAX:
+
+```php
+$nonces->checkAjaxReferer('demo_sync');
+```
+
+## Capabilities
+
+Manager: `WpToolKit\Manager\CapabilityManager`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use WpToolKit\Manager\CapabilityManager;
+
+$capabilities = new CapabilityManager();
+
+if (!$capabilities->currentUserCan('manage_options')) {
+    wp_die('Access denied');
+}
+```
+
+Role capability management:
+
+```php
+$capabilities->addCapabilityToRole('editor', 'manage_demo_plugin');
+$capabilities->removeCapabilityFromRole('editor', 'manage_demo_plugin');
 ```
 
 ## HTTP API
