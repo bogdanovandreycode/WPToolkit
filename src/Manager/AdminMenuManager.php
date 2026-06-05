@@ -5,19 +5,22 @@ namespace WpToolKit\Manager;
 final class AdminMenuManager
 {
     /** @var array<array{target: string, movable: string}> */
-    private static $ruleMovedMenus = [];
+    private array $movedMenuRules = [];
 
-    public static function init()
+    public function init(): void
     {
-        add_action('admin_init', [__CLASS__, 'applyMovedMenus']);
+        add_action('admin_init', [$this, 'applyMovedMenus']);
     }
 
-    public static function moveMenuAfterTarget(string $targetMenu, string $menuToMove): void
+    public function moveMenuAfterTarget(string $targetMenu, string $menuToMove): void
     {
-        self::$ruleMovedMenus[] = ['target' => $targetMenu, 'movable' => $menuToMove];
+        $this->movedMenuRules[] = [
+            'target' => $targetMenu,
+            'movable' => $menuToMove,
+        ];
     }
 
-    public static function applyMovedMenus(): void
+    public function applyMovedMenus(): void
     {
         global $menu;
 
@@ -25,9 +28,9 @@ final class AdminMenuManager
             return;
         }
 
-        foreach (self::$ruleMovedMenus as $rule) {
-            $targetPosition = self::getPositionByName($rule['target'], $menu);
-            $movablePosition = self::getPositionByName($rule['movable'], $menu);
+        foreach ($this->movedMenuRules as $rule) {
+            $targetPosition = $this->getPositionByName($rule['target'], $menu);
+            $movablePosition = $this->getPositionByName($rule['movable'], $menu);
 
             if ($targetPosition === null || $movablePosition === null) {
                 continue;
@@ -39,7 +42,7 @@ final class AdminMenuManager
         }
     }
 
-    private static function getPositionByName(string $menuName, array $menu): ?int
+    private function getPositionByName(string $menuName, array $menu): ?int
     {
         if (empty($menu)) {
             return null;

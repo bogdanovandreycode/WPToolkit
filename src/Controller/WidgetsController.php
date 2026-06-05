@@ -18,8 +18,8 @@ abstract class WidgetsController extends WP_Widget implements WidgetInterface
             ['description' => $description]
         );
 
-        add_action('widgets_init', function () {
-            register_widget(static::class);
+        add_action('widgets_init', function (): void {
+            register_widget($this->getWidgetClass());
         });
     }
 
@@ -36,5 +36,10 @@ abstract class WidgetsController extends WP_Widget implements WidgetInterface
     public function update($new_instance, $old_instance): array
     {
         throw new \RuntimeException("The update() method must be overridden in the subclass.");
+    }
+
+    protected function getWidgetClass(): string
+    {
+        return get_class($this);
     }
 }
