@@ -2,27 +2,30 @@
 
 namespace WpToolKit\Controller;
 
-use WP_Post;
-use WP_Query;
-use WpToolKit\Entity\Post;
 use WpToolKit\Entity\MetaPoly;
-use WpToolKit\Factory\ServiceFactory;
+use WpToolKit\Entity\Post;
 
 class PostController
 {
-    public function __construct(private Post $post)
-    {
-        add_action('init', function () {
+    private readonly MenuController $menu;
+
+    public function __construct(
+        private readonly Post $post,
+        ?MenuController $menu = null
+    ) {
+        $this->menu = $menu ?? new MenuController();
+
+        add_action('init', function (): void {
             register_post_type(
                 $this->post->name,
                 [
                     'public' => $this->post->public,
-                    'label'  => $this->post->title,
+                    'label' => $this->post->title,
                     'menu_icon' => $this->post->icon,
                     'supports' => $this->post->supports,
                     'show_in_menu' => $this->post->getUrl(),
                     'menu_position' => $this->post->position,
-                    'show_in_rest' => $this->post->rest
+                    'show_in_rest' => $this->post->rest,
                 ]
             );
         });
@@ -37,9 +40,7 @@ class PostController
 
     public function addToMenu(): void
     {
-        $menu = ServiceFactory::getService('MenuController');
-
-        $menu->addItem(
+        $this->menu->addItem(
             $this->post->title,
             $this->post->title,
             $this->post->role,
@@ -52,9 +53,7 @@ class PostController
 
     public function addToSubMenu(Post $parentPost): void
     {
-        $menu = ServiceFactory::getService('MenuController');
-
-        $menu->addSubItem(
+        $this->menu->addSubItem(
             $parentPost->getUrl(),
             $this->post->title,
             $this->post->title,
@@ -65,7 +64,7 @@ class PostController
         );
     }
 
-    public function addMetaPoly(MetaPoly $metaPoly)
+    public function addMetaPoly(MetaPoly $metaPoly): void
     {
         register_post_meta(
             $this->post->name,
@@ -78,7 +77,7 @@ class PostController
         );
     }
 
-    public function renderContent($content)
+    public function renderContent(mixed $content): mixed
     {
         return $content;
     }

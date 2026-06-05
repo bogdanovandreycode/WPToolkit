@@ -2,11 +2,12 @@
 
 namespace WpToolKit\Controller;
 
-use WpToolKit\Factory\ServiceFactory;
 use WpToolKit\Interface\ContentHandlerInterface;
 
 abstract class AdminPage implements ContentHandlerInterface
 {
+    protected readonly MenuController $menu;
+
     public function __construct(
         public string $pageTitle,
         public string $menuTitle,
@@ -16,11 +17,12 @@ abstract class AdminPage implements ContentHandlerInterface
         public bool $isSubManuItem = false,
         public ?string $parentUrl = null,
         public ?string $icon = null,
+        ?MenuController $menu = null,
     ) {
-        $menu = ServiceFactory::getService('MenuController');
+        $this->menu = $menu ?? new MenuController();
 
         if ($isSubManuItem) {
-            $menu->addSubItem(
+            $this->menu->addSubItem(
                 $this->parentUrl,
                 $this->pageTitle,
                 $this->menuTitle,
@@ -30,7 +32,7 @@ abstract class AdminPage implements ContentHandlerInterface
                 $this->position
             );
         } else {
-            $menu->addItem(
+            $this->menu->addItem(
                 $this->pageTitle,
                 $this->menuTitle,
                 $this->role,
@@ -41,7 +43,7 @@ abstract class AdminPage implements ContentHandlerInterface
             );
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
 
             if (
@@ -54,7 +56,7 @@ abstract class AdminPage implements ContentHandlerInterface
         }
     }
 
-    abstract function render(): void;
+    abstract public function render(): void;
 
-    abstract function callback(): void;
+    abstract public function callback(): void;
 }

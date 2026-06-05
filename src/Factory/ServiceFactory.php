@@ -3,6 +3,7 @@
 namespace WpToolKit\Factory;
 
 use InvalidArgumentException;
+use Closure;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -12,12 +13,10 @@ use ReflectionNamedType;
 use WpToolKit\Controller\MenuController;
 use WpToolKit\Controller\ScriptController;
 
-class ServiceFactory
+final class ServiceFactory
 {
-    private static ?self $instance = null;
-
     /**
-     * @var array<string, array{concrete: callable|string, shared: bool}>
+     * @var array<string, array{concrete: Closure|string, shared: bool}>
      */
     private array $bindings = [];
 
@@ -36,35 +35,12 @@ class ServiceFactory
         $this->registerDefaults();
     }
 
-    public static function setInstance(?self $container = null): self
-    {
-        self::$instance = $container ?? new self();
-
-        return self::$instance;
-    }
-
-    public static function getInstance(): self
-    {
-        return self::$instance ??= new self();
-    }
-
-    public static function app(?string $abstract = null, array $parameters = []): mixed
-    {
-        $container = self::getInstance();
-
-        if ($abstract === null) {
-            return $container;
-        }
-
-        return $container->make($abstract, $parameters);
-    }
-
-    public function bind(string $abstract, callable|string|null $concrete = null): self
+    public function bind(string $abstract, Closure|string|null $concrete = null): self
     {
         return $this->register($abstract, $concrete ?? $abstract, false);
     }
 
-    public function singleton(string $abstract, callable|string|null $concrete = null): self
+    public function singleton(string $abstract, Closure|string|null $concrete = null): self
     {
         return $this->register($abstract, $concrete ?? $abstract, true);
     }
@@ -117,6 +93,11 @@ class ServiceFactory
         return $instance;
     }
 
+    public function get(string $abstract, array $parameters = []): mixed
+    {
+        return $this->make($abstract, $parameters);
+    }
+
     public function call(callable|array|string $callback, array $parameters = []): mixed
     {
         if (is_string($callback) && str_contains($callback, '@')) {
@@ -140,18 +121,7 @@ class ServiceFactory
         return $callback(...$resolvedParameters);
     }
 
-    public static function getService(string $name): object
-    {
-        $service = self::app($name);
-
-        if (!is_object($service)) {
-            throw new InvalidArgumentException("Resolved service [$name] is not an object.");
-        }
-
-        return $service;
-    }
-
-    private function register(string $abstract, callable|string $concrete, bool $shared): self
+    private function register(string $abstract, Closure|string $concrete, bool $shared): self
     {
         $abstract = $this->normalize($abstract);
 
@@ -169,14 +139,10 @@ class ServiceFactory
         return $this;
     }
 
-    private function build(callable|string $concrete, array $parameters = []): mixed
+    private function build(Closure|string $concrete, array $parameters = []): mixed
     {
-        if (is_callable($concrete) && !is_string($concrete)) {
+        if ($concrete instanceof Closure) {
             return $concrete($this, $parameters);
-        }
-
-        if (!is_string($concrete)) {
-            throw new InvalidArgumentException('Service definition must be a class name or closure.');
         }
 
         $className = $this->normalize($concrete);
@@ -261,7 +227,7 @@ class ServiceFactory
     {
         $parts = explode('\\', $className);
 
-        return end($parts);
+        return (string) end($parts);
     }
 
     private function registerDefaults(): void

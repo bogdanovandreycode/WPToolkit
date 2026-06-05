@@ -4,15 +4,19 @@ namespace WpToolKit\Controller;
 
 use WpToolKit\Entity\Post;
 use WpToolKit\Entity\Taxonomy;
-use WpToolKit\Factory\ServiceFactory;
 
 class TaxonomyController
 {
+    private readonly MenuController $menu;
+
     public function __construct(
-        private Post $post,
-        private Taxonomy $taxonomy
+        private readonly Post $post,
+        private readonly Taxonomy $taxonomy,
+        ?MenuController $menu = null
     ) {
-        add_action('init', function () {
+        $this->menu = $menu ?? new MenuController();
+
+        add_action('init', function (): void {
             register_taxonomy(
                 $this->taxonomy->name,
                 $this->post->name,
@@ -20,7 +24,7 @@ class TaxonomyController
                     'labels' => [
                         'name' => _x($this->taxonomy->labelName, $this->taxonomy->name),
                         'singular_name' => _x($this->taxonomy->labelSingularName, $this->taxonomy->labelSingularName),
-                        'search_items' =>  __($this->taxonomy->labelSearchItems),
+                        'search_items' => __($this->taxonomy->labelSearchItems),
                         'all_items' => __($this->taxonomy->labelAllItems),
                         'parent_item' => __($this->taxonomy->labelParentItem),
                         'parent_item_colon' => __($this->taxonomy->labelParentItemColon),
@@ -28,12 +32,12 @@ class TaxonomyController
                         'update_item' => __($this->taxonomy->labelUpdateItem),
                         'add_new_item' => __($this->taxonomy->labelAddNewItem),
                         'new_item_name' => __($this->taxonomy->labelNewItemName),
-                        'menu_name' => __($this->taxonomy->labelMenuName)
+                        'menu_name' => __($this->taxonomy->labelMenuName),
                     ],
                     'hierarchical' => $this->taxonomy->hierarchical,
                     'show_ui' => $this->taxonomy->showedUi,
                     'query_var' => $this->taxonomy->queryVar,
-                    'show_in_rest' => $this->post->rest
+                    'show_in_rest' => $this->post->rest,
                 ]
             );
         });
@@ -41,9 +45,7 @@ class TaxonomyController
 
     public function addToSubMenu(): void
     {
-        $menu = ServiceFactory::getService('MenuController');
-
-        $menu->addSubItem(
+        $this->menu->addSubItem(
             $this->post->getUrl(),
             $this->taxonomy->labelName,
             $this->taxonomy->labelName,
