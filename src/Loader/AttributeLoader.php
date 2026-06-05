@@ -5,6 +5,7 @@ namespace WpToolKit\Loader;
 use InvalidArgumentException;
 use ReflectionClass;
 use WpToolKit\Attribute\Action;
+use WpToolKit\Attribute\ControllerAttributeInterface;
 use WpToolKit\Attribute\Filter;
 use WpToolKit\Attribute\MetaBox;
 use WpToolKit\Attribute\Page;
@@ -71,8 +72,10 @@ class AttributeLoader
                 continue;
             }
 
-            if ($this->shouldInstantiate($reflection)) {
-                $this->serviceFactory->make($class);
+            $parameters = $this->resolveParameters($reflection);
+
+            if ($parameters !== null) {
+                $this->serviceFactory->make($class, $parameters);
             }
         }
     }
@@ -124,9 +127,12 @@ class AttributeLoader
         return $files;
     }
 
-    private function shouldInstantiate(ReflectionClass $reflection): bool
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function resolveParameters(ReflectionClass $reflection): ?array
     {
-        $shouldInstantiate = false;
+        $matchedAttribute = null;
 
         foreach (self::ATTRIBUTE_CLASS_MAP as $attributeClass => $parentClass) {
             $attributes = $reflection->getAttributes($attributeClass);
@@ -146,9 +152,30 @@ class AttributeLoader
                 );
             }
 
-            $shouldInstantiate = true;
+            if ($matchedAttribute !== null) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Class [%s] cannot use multiple controller attributes at the same time.',
+                        $reflection->getName()
+                    )
+                );
+            }
+
+            $attributeInstance = $attributes[0]->newInstance();
+
+            if (!$attributeInstance instanceof ControllerAttributeInterface) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Attribute [%s] must implement [%s].',
+                        $attributeClass,
+                        ControllerAttributeInterface::class
+                    )
+                );
+            }
+
+            $matchedAttribute = $attributeInstance->toParameters($this->serviceFactory);
         }
 
-        return $shouldInstantiate;
+        return $matchedAttribute;
     }
 }
