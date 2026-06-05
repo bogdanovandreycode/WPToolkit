@@ -580,8 +580,12 @@ my-plugin/
 ├─ vendor/
 ├─ src/
 │  ├─ Admin/
+│  ├─ Controllers/
 │  ├─ Hooks/
 │  ├─ Http/
+│  │  ├─ Params/
+│  │  ├─ Routes/
+│  │  └─ Requests/
 │  ├─ Shortcodes/
 │  ├─ Widgets/
 │  └─ Service/
