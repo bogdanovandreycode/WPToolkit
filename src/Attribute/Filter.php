@@ -5,6 +5,6 @@ namespace WpToolKit\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Route
+final class Filter
 {
 }
