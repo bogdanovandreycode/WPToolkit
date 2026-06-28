@@ -12,6 +12,7 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use WpToolKit\Controller\MenuController;
 use WpToolKit\Controller\ScriptController;
+use WpToolKit\Manager\LocaleManager;
 
 final class ServiceFactory
 {
@@ -232,6 +233,7 @@ final class ServiceFactory
 
     private function registerDefaults(): void
     {
+        $this->singleton(LocaleManager::class);
         $this->singleton(MenuController::class);
         $this->singleton(ScriptController::class);
     }

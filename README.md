@@ -20,6 +20,7 @@ The library helps you register:
 - nonces
 - capabilities
 - notices
+- PHP-file translations
 - HTTP client
 - lifecycle callbacks
 - views
@@ -654,6 +655,96 @@ Check nonce in AJAX:
 
 ```php
 $nonces->checkAjaxReferer('demo_sync');
+```
+
+## Translations
+
+Manager: `WpToolKit\Manager\LocaleManager`
+
+This is an optional alternative to WordPress gettext helpers. It loads PHP dictionaries from locale folders and works through normal dependency injection instead of a static facade.
+
+Recommended structure:
+
+```text
+my-plugin/
+├─ languages/
+│  ├─ en/
+│  │  └─ payment.php
+│  ├─ ro/
+│  │  └─ payment.php
+│  └─ ru/
+│     └─ payment.php
+```
+
+Example dictionary:
+
+```php
+<?php
+
+return [
+    'maib_payment' => 'Payment via MAIB',
+    'maib_description' => 'Payment for booking #:booking_id',
+];
+```
+
+Configure it in your plugin bootstrap:
+
+```php
+<?php
+
+use WpToolKit\Factory\ServiceFactory;
+use WpToolKit\Manager\LocaleManager;
+
+$container = new ServiceFactory();
+
+$container->instance(
+    LocaleManager::class,
+    new LocaleManager(__DIR__ . '/languages', 'en', 'en')
+);
+```
+
+Inject it into your services or controllers:
+
+```php
+<?php
+
+use WpToolKit\Manager\LocaleManager;
+
+final class PaymentService
+{
+    public function __construct(private LocaleManager $locale)
+    {
+    }
+
+    public function title(string $language): string
+    {
+        return $this->locale->get('payment.maib_payment', $language);
+    }
+
+    public function description(int $bookingId, string $language): string
+    {
+        return $this->locale->get('payment.maib_description', $language, [
+            'booking_id' => $bookingId,
+        ]);
+    }
+}
+```
+
+Load a whole dictionary by dotted path:
+
+```php
+$locale = $this->locale->getDictionary('request.entity.passenger', $language);
+
+return [
+    'first_name.required' => $locale['first_name_required'] ?? 'first_name.required',
+    'first_name.string' => $locale['first_name_string'] ?? 'first_name.string',
+];
+```
+
+For nested dictionaries, dotted keys are supported too:
+
+```php
+$message = $this->locale->get('validation.passenger.first_name.required', 'ro');
 ```
 
 ## Capabilities
