@@ -14,6 +14,7 @@ use WpToolKit\Attribute\Page;
 use WpToolKit\Attribute\Route;
 use WpToolKit\Attribute\Shortcode;
 use WpToolKit\Attribute\Widget;
+use WpToolKit\Attribute\WpBakeryElement;
 use WpToolKit\Controller\ActionController;
 use WpToolKit\Controller\AjaxController;
 use WpToolKit\Controller\AdminPage;
@@ -23,6 +24,7 @@ use WpToolKit\Controller\MetaBoxController;
 use WpToolKit\Controller\RouteController;
 use WpToolKit\Controller\ShortcodeController;
 use WpToolKit\Controller\WidgetsController;
+use WpToolKit\Controller\WpBakeryElementController;
 use WpToolKit\Factory\ServiceFactory;
 
 class AttributeLoader
@@ -40,6 +42,7 @@ class AttributeLoader
         Page::class => AdminPage::class,
         Shortcode::class => ShortcodeController::class,
         Widget::class => WidgetsController::class,
+        WpBakeryElement::class => WpBakeryElementController::class,
     ];
 
     private string $baseNamespace;

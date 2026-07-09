@@ -13,6 +13,7 @@ The library helps you register:
 - meta boxes
 - shortcodes
 - widgets
+- WPBakery elements
 - roles
 - options
 - transients
@@ -89,6 +90,7 @@ Supported attributes:
 - `#[MetaBox(...)]`
 - `#[Shortcode(...)]`
 - `#[Widget(...)]`
+- `#[WpBakeryElement(...)]`
 
 Important rules:
 
@@ -467,6 +469,69 @@ final class DemoWidget extends WidgetsController
     }
 }
 ```
+
+## WPBakery Elements
+
+Base controller: `WpToolKit\Controller\WpBakeryElementController`
+
+Attribute: `WpToolKit\Attribute\WpBakeryElement`
+
+`WpBakeryElementController` registers both the shortcode and the `vc_map()` configuration. Every element gets a `Design` tab by default. The design value is stored as URL-encoded JSON with responsive keys:
+
+- `default`
+- `laptops`
+- `tablets`
+- `mobiles`
+
+Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\DemoPlugin\WpBakery;
+
+use WpToolKit\Attribute\WpBakeryElement;
+use WpToolKit\Controller\WpBakeryElementController;
+
+#[WpBakeryElement(
+    base: 'demo_title',
+    name: 'Demo Title',
+    category: 'Demo',
+    description: 'Styled demo title'
+)]
+final class DemoTitleElement extends WpBakeryElementController
+{
+    protected function params(): array
+    {
+        return [
+            [
+                'type' => 'textfield',
+                'heading' => 'Title',
+                'param_name' => 'title',
+                'value' => 'Hello',
+            ],
+        ];
+    }
+
+    protected function renderElement(array $atts, ?string $content = null): string
+    {
+        return '<h2>' . esc_html($atts['title']) . '</h2>';
+    }
+}
+```
+
+The parent controller wraps rendered HTML with a design class and prints the generated CSS automatically. Override `wrapDesignElement()` if the element needs to put the design class on its own root node:
+
+```php
+protected function wrapDesignElement(): bool
+{
+    return false;
+}
+```
+
+Then use `$this->getDesignClass($atts)` inside `renderElement()`.
 
 ## ServiceFactory
 
