@@ -967,6 +967,8 @@ final class WpBakeryDesignManager
 
     private function renderMediaField(string $screen, string $field, string $id, string $value): string
     {
+        $previewUrl = $this->mediaPreviewUrl($value);
+
         return sprintf(
             '<div class="wptk-design-media">
                 <button type="button" class="wptk-design-media-button" aria-label="%5$s">
@@ -974,7 +976,7 @@ final class WpBakeryDesignManager
                     <span class="wptk-design-media-preview" aria-hidden="true"></span>
                 </button>
                 <div class="wptk-design-media-value">
-                    <input id="%1$s" class="wptk-design-input" type="text" data-screen="%2$s" data-property="%3$s" value="%4$s" autocomplete="off" placeholder="%6$s">
+                    <input id="%1$s" class="wptk-design-input" type="text" data-screen="%2$s" data-property="%3$s" value="%4$s" data-preview-value="%4$s" data-preview-url="%8$s" autocomplete="off" placeholder="%6$s">
                     <button type="button" class="wptk-design-media-remove">%7$s</button>
                 </div>
             </div>',
@@ -984,8 +986,32 @@ final class WpBakeryDesignManager
             $this->escapeAttribute($value),
             $this->escapeAttribute($this->translate('Choose image')),
             $this->escapeAttribute($this->translate('Image URL or attachment ID')),
-            $this->escapeHtml($this->translate('Remove'))
+            $this->escapeHtml($this->translate('Remove')),
+            $this->escapeAttribute($previewUrl)
         );
+    }
+
+    private function mediaPreviewUrl(string $value): string
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        if (preg_match('/^\d+$/', $value) === 1 && function_exists('wp_get_attachment_image_url')) {
+            $url = wp_get_attachment_image_url((int) $value, 'thumbnail');
+
+            return is_string($url) ? $url : '';
+        }
+
+        if (preg_match('/^url\((["\']?)(.*?)\1\)$/i', $value, $matches) === 1) {
+            return $matches[2];
+        }
+
+        return preg_match('#^(https?:)?//#i', $value) === 1 || str_starts_with($value, '/')
+            ? $value
+            : '';
     }
 
     private function isColorField(string $field): bool
@@ -1144,6 +1170,12 @@ __ROOT__ .wptk-design-media-remove {
     color: var(--wptk-blue);
     cursor: pointer;
     padding: 8px 12px;
+}
+__ROOT__ .wptk-design-reset {
+    visibility: hidden;
+}
+__ROOT__ .wptk-design-section.is-open .wptk-design-reset {
+    visibility: visible;
 }
 __ROOT__ .wptk-design-reset:hover,
 __ROOT__ .wptk-design-media-remove:hover {
@@ -1647,6 +1679,15 @@ CSS);
             var panel = section.querySelector(".wptk-design-section-panel");
             var open = !section.classList.contains("is-open");
 
+            if (open) {
+                section.parentElement.querySelectorAll(".wptk-design-section.is-open").forEach(function (item) {
+                    var itemToggle = item.querySelector(".wptk-design-section-toggle");
+                    var itemPanel = item.querySelector(".wptk-design-section-panel");
+                    item.classList.remove("is-open");
+                    itemToggle.setAttribute("aria-expanded", "false");
+                    itemPanel.hidden = true;
+                });
+            }
             section.classList.toggle("is-open", open);
             toggle.setAttribute("aria-expanded", open ? "true" : "false");
             panel.hidden = !open;
