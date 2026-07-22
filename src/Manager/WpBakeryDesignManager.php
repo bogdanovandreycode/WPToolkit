@@ -321,6 +321,21 @@ final class WpBakeryDesignManager
         'animation-delay' => true,
     ];
 
+    /**
+     * @var array<string, bool>
+     */
+    private const TEXT_CASCADE_PROPERTIES = [
+        'color' => true,
+        'text-align' => true,
+        'font-size' => true,
+        'line-height' => true,
+        'letter-spacing' => true,
+        'font-family' => true,
+        'font-weight' => true,
+        'text-transform' => true,
+        'font-style' => true,
+    ];
+
     private bool $paramTypeRegistered = false;
 
     /**
@@ -390,16 +405,59 @@ final class WpBakeryDesignManager
         $css = '';
 
         foreach (self::SCREENS as $screen => $screenConfig) {
-            $rules = $this->buildRules($data[$screen] ?? []);
+            $screenRules = $data[$screen] ?? [];
+            $rules = $this->buildRules($screenRules);
+            $textCascadeRules = $this->buildTextCascadeRules($screenRules);
 
-            if ($rules === '') {
+            if ($rules === '' && $textCascadeRules === '') {
                 continue;
             }
 
-            $block = $selector . '{' . $rules . '}';
+            $blocks = '';
+
+            if ($rules !== '') {
+                $blocks .= $selector . '{' . $rules . '}';
+            }
+
+            if ($textCascadeRules !== '') {
+                $blocks .= $selector . ' *{' . $textCascadeRules . '}';
+            }
+
             $media = $screenConfig['media'];
 
-            $css .= $media === null ? $block : $media . '{' . $block . '}';
+            $css .= $media === null ? $blocks : $media . '{' . $blocks . '}';
+        }
+
+        return $css;
+    }
+
+    /**
+     * @param array<string, string> $rules
+     */
+    private function buildTextCascadeRules(array $rules): string
+    {
+        $css = '';
+
+        foreach ($rules as $property => $value) {
+            $value = trim($value);
+
+            if ($value === '' || !isset(self::TEXT_CASCADE_PROPERTIES[$property])) {
+                continue;
+            }
+
+            $cssValue = $this->sanitizeCssValue($property, $value);
+
+            if ($cssValue === '') {
+                continue;
+            }
+
+            $css .= $property . ':' . $cssValue . '!important;';
+        }
+
+        $textShadow = $this->buildShadow($rules, 'text-shadow');
+
+        if ($textShadow !== '') {
+            $css .= 'text-shadow:' . $textShadow . '!important;';
         }
 
         return $css;
